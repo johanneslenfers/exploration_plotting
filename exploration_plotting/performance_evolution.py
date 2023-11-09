@@ -50,7 +50,6 @@ def performance_evolution_methods(plotting_configuration: PlottingConfiguration,
     plt.title(plotting_configuration.name + " - Performance Evolution", fontsize=plotting_configuration.fontsize)
     plt.xlabel("Samples")
     plt.ylabel("Log Runtime (ms)")
-    plt.legend()
 
     # plot expert and default
     if plotting_configuration.expert:
@@ -70,6 +69,8 @@ def performance_evolution_methods(plotting_configuration: PlottingConfiguration,
             default: float = plotting_configuration.expert
 
         plt.axhline(y=default, color='black', linestyle='-', label='Default', alpha=0.5)
+
+    plt.legend()
 
     # save to file
     log_appendix = ""
