@@ -4,4 +4,4 @@ Plotting scripts to visualize exploration of rewrites with integrated parameter 
 
 ## Performance Evolution
 
-![alt tag](example/mmGPU_maps.svg)
+![alt tag](example/mmGPU_maps.png)
