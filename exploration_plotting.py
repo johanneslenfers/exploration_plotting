@@ -2,10 +2,14 @@
 from exploration_plotting.plotting_configuration import PlottingConfiguration
 from exploration_plotting.scatter import scatter
 from exploration_plotting.performance_evolution import performance_evolution
+from exploration_plotting.facet import facet_plot
+from exploration_plotting.speedup_tuning import speedup_tuning
 
 plots = {
     "scatter": scatter,
-    "performance_evolution": performance_evolution
+    "performance_evolution": performance_evolution,
+    "facet": facet_plot,
+    "speedup_tuning": speedup_tuning
 }
 
 
