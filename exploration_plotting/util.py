@@ -52,7 +52,8 @@ def group_by_tuning(run):
     rewrite_sequence = run[0]['rewrite']
     for line in run:
         # check if we have a new group
-        if low_level_hash != line['low-level hash'] and rewrite_sequence != line['rewrite']:
+        # if low_level_hash != line['low-level hash'] and rewrite_sequence != line['rewrite']:
+        if rewrite_sequence != line['rewrite']:
             # yes, update identifier
             low_level_hash = line['low-level hash']
             rewrite_sequence = line['rewrite']
