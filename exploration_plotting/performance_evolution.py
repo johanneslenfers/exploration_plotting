@@ -136,6 +136,11 @@ def performance_evolution_method(plotting_configuration: PlottingConfiguration, 
     # Plot
     x = range(len(means))
 
+    # cut means in and x if necessary
+    if plotting_configuration.limit:
+        x = x[:plotting_configuration.limit]
+        means = means[:plotting_configuration.limit]
+
     # qx = means.index
     plt.plot(x, means, alpha=0.8, color=color, lw=2, label=method_key)
 

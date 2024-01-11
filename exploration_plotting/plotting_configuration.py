@@ -16,6 +16,7 @@ class PlottingConfiguration:
         plotting_parser.add_argument('-d', '--default', type=float, help='Default Performance')
         plotting_parser.add_argument('-l', '--log', action='store_true', help='Plot Log')
         plotting_parser.add_argument('-n', '--name', help='Give Name')
+        plotting_parser.add_argument('-li', '--limit', type=int, help='Limit Plotting')
 
         args = plotting_parser.parse_args()
 
@@ -41,6 +42,7 @@ class PlottingConfiguration:
         # parse optional arguments
         self.expert: Union[float, None] = args.expert
         self.default: Union[float, None] = args.default
+        self.limit: Union[int, None] = args.limit
 
         self.log = False
         if args.log:
@@ -60,4 +62,5 @@ class PlottingConfiguration:
         expert: {self.expert}
         default: {self.default}
         log: {self.log}
+        limit: {self.limit}
         """
