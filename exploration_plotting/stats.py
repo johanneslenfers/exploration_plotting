@@ -15,7 +15,6 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
     # process stats
     runs_stats = {}
     for method in data:
-        print(f"method: {method}")
         run_counter = 0
 
         for run in data[method][1]:
@@ -40,7 +39,7 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
             duration = (end - start) / 1000 / 60 / 60
 
             # add stats
-            runs_stats[run] = [
+            runs_stats[f"{method}_{run}"] = [
                 method,
                 run_counter,
                 samples,
