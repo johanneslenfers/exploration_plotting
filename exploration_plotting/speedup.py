@@ -32,9 +32,9 @@ colors = (
 def speedup(plotting_configuration: PlottingConfiguration) -> None:
     data = util.get_data_fully(plotting_configuration)
 
-    # speedup_total_std(data, plotting_configuration)
+    speedup_total_std(data, plotting_configuration)
     # speedup_total_grouped_by_category(data, plotting_configuration)
-    speedup_total_grouped_by_method(data, plotting_configuration)
+    # speedup_total_grouped_by_method(data, plotting_configuration)
 
     return None
 
@@ -96,8 +96,9 @@ def speedup_total_std(data, plotting_configuration: PlottingConfiguration) -> No
     if plotting_configuration.log:
         log_appendix = "_log"
 
-    plt.savefig(f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}_speedup.pdf",
-                dpi=plotting_configuration.dpi)
+    plt.savefig(
+        f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}_speedup.{plotting_configuration.format}",
+        dpi=plotting_configuration.dpi)
 
     pass
 
@@ -191,8 +192,9 @@ def speedup_total_grouped_by_category(data, plotting_configuration: PlottingConf
     if plotting_configuration.log:
         log_appendix = "_log"
 
-    plt.savefig(f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}_speedup_grouped.pdf",
-                dpi=plotting_configuration.dpi)
+    plt.savefig(
+        f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}_speedup_grouped.{plotting_configuration.format}",
+        dpi=plotting_configuration.dpi)
 
 
 def speedup_total_grouped_by_method(data, plotting_configuration: PlottingConfiguration) -> None:
@@ -281,5 +283,5 @@ def speedup_total_grouped_by_method(data, plotting_configuration: PlottingConfig
         log_appendix = "_log"
 
     plt.savefig(
-        f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}_speedup_grouped_method.pdf",
+        f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}_speedup_grouped_method.{plotting_configuration.format}",
         dpi=plotting_configuration.dpi)

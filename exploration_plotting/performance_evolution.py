@@ -77,8 +77,9 @@ def performance_evolution_methods(plotting_configuration: PlottingConfiguration,
     if plotting_configuration.log:
         log_appendix = "_log"
 
-    plt.savefig(f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}.pdf",
-                dpi=plotting_configuration.dpi)
+    plt.savefig(
+        f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}.{plotting_configuration.format}",
+        dpi=plotting_configuration.dpi)
 
     return None
 

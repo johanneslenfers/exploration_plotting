@@ -38,6 +38,6 @@ def scatter(plotting_configuration: PlottingConfiguration) -> None:
         fig = go.Figure(data=trace, layout=layout)
 
         fig.write_image(
-            f"{plotting_configuration.output}/{plotting_configuration.name}_{method}_scatter.pdf")
+            f"{plotting_configuration.output}/{plotting_configuration.name}_{method}_scatter.{plotting_configuration.format}")
 
     return None

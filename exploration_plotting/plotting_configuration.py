@@ -18,6 +18,7 @@ class PlottingConfiguration:
         plotting_parser.add_argument('-l', '--log', action='store_true', help='Plot Log')
         plotting_parser.add_argument('-n', '--name', help='Give Name')
         plotting_parser.add_argument('-li', '--limit', type=int, help='Limit Plotting')
+        plotting_parser.add_argument('-f', '--format', type=str, help='File format')
 
         args = plotting_parser.parse_args()
 
@@ -44,6 +45,13 @@ class PlottingConfiguration:
         self.expert: Union[float, None] = args.expert
         self.default: Union[float, None] = args.default
         self.limit: Union[int, None] = args.limit
+        self.format: Union[int, None] = args.format
+
+        # parse format
+        if args.format is not None:
+            self.format = args.format
+        else:
+            self.format = 'pdf'
 
         self.log = False
         if args.log:
