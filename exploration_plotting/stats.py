@@ -38,12 +38,32 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
             end = float(data[method][1][run][-1]['timestamp'])
             duration = (end - start) / 1000 / 60 / 60
 
+            # invalids
+            # len(list(filter([])))
+            valid_samples = len([item for item in numbers if item != -1])
+            valid_samples_fraction = valid_samples / len(numbers) * 100
+
+            # if all samples of a tuning run are invalid, the rewrites is considered invalid
+            invalid_rewrites = 0
+            for group in grouped_by_tuning:
+                invalid = [elem for elem in group if elem['error-level'] != 'None']
+                if len(invalid) == len(group):
+                    invalid_rewrites += 1
+
+            valid_rewrites = tuning_runs - invalid_rewrites
+
+            valid_rewrites_fraction = valid_rewrites / tuning_runs * 100
+
             # add stats
             runs_stats[f"{method}_{run}"] = [
                 method,
                 run_counter,
                 samples,
+                valid_samples,
+                f"{valid_samples_fraction:.2f}",
                 tuning_runs,
+                valid_rewrites,
+                f"{valid_rewrites_fraction:.2f}",
                 f"{duration:.2f}",
                 minimum,
                 maximum,
@@ -62,13 +82,17 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
             'method',
             'run',
             'samples',
+            'valid samples',
+            'valid samples percent',
             'rewrites',
+            'valid rewrites',
+            'valid rewrites percent',
             'duration (h)',
             'minimum (ms)',
             'maximum (ms)',
             'speedup total',
             'minimum after',
-            'minimum after percent'
+            'minimum after percent',
         ]
         csvwriter.writerow(header)
 
