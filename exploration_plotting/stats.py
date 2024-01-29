@@ -30,6 +30,7 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
             minimum = min(list(filter(lambda x: (x != -1), numbers)))
             maximum = max(list(filter(lambda x: (x != -1), numbers)))
             speedup = numbers[0] / minimum
+            # speedup = plotting_configuration.default / minimum
             minimum_index = numbers.index(minimum)
             minimum_index_percent = (minimum_index / samples) * 100
 

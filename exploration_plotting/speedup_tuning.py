@@ -112,7 +112,7 @@ def performance_of_tuning(data, plotting_configuration: PlottingConfiguration) -
 
             counter = 0
             for speedup in tuning_ranges:
-                plt.vlines(x=counter, ymin=speedup['baseline'], ymax=speedup['minimum'])
+                plt.vlines(x=counter, ymin=speedup['baseline'], ymax=speedup['minimum'], linewidth=0.8)
                 counter += 1
 
             # plt.bar(ind, tuning_speedups_of_method, width, color="#3498db", bottom=1000)
