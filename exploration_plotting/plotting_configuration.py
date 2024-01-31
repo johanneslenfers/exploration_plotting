@@ -19,6 +19,9 @@ class PlottingConfiguration:
         plotting_parser.add_argument('-n', '--name', help='Give Name')
         plotting_parser.add_argument('-li', '--limit', type=int, help='Limit Plotting')
         plotting_parser.add_argument('-f', '--format', type=str, help='File format')
+        plotting_parser.add_argument('-u', '--unit',
+                                     choices=['runtime', 'gflops'],
+                                     help='Unit ')
 
         args = plotting_parser.parse_args()
 
@@ -57,6 +60,11 @@ class PlottingConfiguration:
         if args.log:
             self.log = True
 
+        if args.unit:
+            self.unit: str = args.unit
+        else:
+            self.unit: str = "runtime"
+
         # constant arguments
         self.figsize = (10, 10)
         self.dpi = 1000
@@ -72,4 +80,5 @@ class PlottingConfiguration:
         default: {self.default}
         log: {self.log}
         limit: {self.limit}
+        unit: {self.unit}
         """

@@ -11,6 +11,14 @@ def pather(folder):
     return os.path.getmtime(folder[1])
 
 
+def get_gflops(runtime: float) -> float:
+    MatrixSize = 1024
+    NumOps = 2 * MatrixSize ** 3
+    gflops = 1.0e-9 * NumOps / runtime
+
+    return gflops
+
+
 def get_data(plotting_configuration: PlottingConfiguration):
     # dict[str, tuple[int, dict[str, list[tuple[bool, float]]]]]:
 

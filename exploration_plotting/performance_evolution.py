@@ -55,18 +55,24 @@ def performance_evolution_methods(plotting_configuration: PlottingConfiguration,
     if plotting_configuration.expert:
 
         if plotting_configuration.log:
-            expert = np.log10(plotting_configuration.expert)
+            expert = np.log10(
+                plotting_configuration.expert if plotting_configuration.unit == 'runtime' else util.get_gflops(
+                    plotting_configuration.expert))
         else:
-            expert = plotting_configuration.expert
+            expert = plotting_configuration.expert if plotting_configuration.unit == 'runtime' else util.get_gflops(
+                plotting_configuration.expert)
 
         plt.axhline(y=expert, color='black', linestyle='-', label='Expert', alpha=0.5)
 
     if plotting_configuration.default:
 
         if plotting_configuration.log:
-            default: float = np.log10(plotting_configuration.default)
+            default: float = np.log10(
+                plotting_configuration.default if plotting_configuration.unit == 'runtime' else util.get_gflops(
+                    plotting_configuration.default))
         else:
-            default: float = plotting_configuration.expert
+            default: float = plotting_configuration.default if plotting_configuration.unit == 'runtime' else util.get_gflops(
+                plotting_configuration.default)
 
         plt.axhline(y=default, color='black', linestyle='-', label='Default', alpha=0.5)
 
@@ -102,9 +108,15 @@ def performance_evolution_method(plotting_configuration: PlottingConfiguration, 
                 minimum = elem
 
             if plotting_configuration.log:
-                pe.append(np.log10(minimum))
+                if plotting_configuration.unit == "gflops":
+                    pe.append(np.log10(util.get_gflops(minimum)))
+                else:
+                    pe.append(np.log10(minimum))
             else:
-                pe.append(minimum)
+                if plotting_configuration.unit == "gflops":
+                    pe.append(util.get_gflops(minimum))
+                else:
+                    pe.append(minimum)
 
         data_internal[key] = pe
 
@@ -131,9 +143,6 @@ def performance_evolution_method(plotting_configuration: PlottingConfiguration, 
         means.append(np.median(np.array(means_internal)))
         confidence.append(sem(means_internal2) * 1.96)
 
-    # why cutting here?
-    # means = means[0:50000]
-
     # Plot
     x = range(len(means))
 
@@ -141,17 +150,15 @@ def performance_evolution_method(plotting_configuration: PlottingConfiguration, 
     if plotting_configuration.limit:
         x = x[:plotting_configuration.limit]
         means = means[:plotting_configuration.limit]
-
-    # qx = means.index
     plt.plot(x, means, alpha=0.8, color=color, lw=2, label=method_key)
 
+    # plot confidence interval
     lower = []
     upper = []
     for i in range(len(means)):
         lower.append(means[i] - confidence[i])
         upper.append(means[i] + confidence[i])
 
-    # plt.fill_between(x, lower, upper, color="#3F5D7D")
     plt.fill_between(x, lower, upper, color=color, alpha=0.2)
 
     return None
