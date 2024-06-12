@@ -8,7 +8,7 @@ class PlottingConfiguration:
         plotting_parser = argparse.ArgumentParser(description='Plotting Parser')
         plotting_parser.add_argument('-p', '--plot',
                                      choices=['performance_evolution', 'scatter', 'facet', 'speedup_tuning', 'stats',
-                                              'speedup', 'violin'],
+                                              'speedup', 'violin', 'all'],
                                      help='Plotting Method',
                                      required=True)
         plotting_parser.add_argument('-i', '--input', help='Input Folder', required=True)
