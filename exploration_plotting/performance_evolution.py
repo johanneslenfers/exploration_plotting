@@ -10,7 +10,7 @@ from . import util
 
 # seaborn
 # warning, depreceated for python > python3.8
-plt.style.use('seaborn')
+plt.style.use('seaborn-v0_8-dark')
 
 # set global colors
 colors = (
