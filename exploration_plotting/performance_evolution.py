@@ -9,8 +9,7 @@ from scipy.stats import sem
 from . import util
 
 # seaborn
-# warning, depreceated for python > python3.8
-plt.style.use('seaborn-v0_8-dark')
+plt.style.use('seaborn-v0_8-darkgrid')
 
 # set global colors
 colors = (
