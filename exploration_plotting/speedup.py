@@ -1,6 +1,12 @@
-#!/bin/python3.8
+#!/bin/python3.10
 
-from .plotting_configuration import PlottingConfiguration
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from plotting_configuration import PlottingConfiguration
+
 
 import plotly.graph_objects as go
 import numpy as np
@@ -8,24 +14,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 # from scipy.stats import sem
 
-from . import util
-
 # seaborn
 plt.style.use('seaborn-v0_8-darkgrid')
-
-# set global colors
-colors = (
-    "tab:red",
-    "tab:green",
-    "tab:cyan",
-    "tab:olive",
-    "tab:purple",
-    "tab:brown",
-    "tab:pink",
-    "tab:blue",
-    "tab:orange",
-    "tab:gray",
-)
 
 
 def speedup(plotting_configuration: PlottingConfiguration) -> None:

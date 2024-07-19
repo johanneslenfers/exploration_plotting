@@ -1,56 +1,81 @@
-#!/bin/python3.8
+#!/bin/python3.10
+from __future__ import annotations
 
-from .plotting_configuration import PlottingConfiguration
+from typing import (
+    List,
+    Dict,
+    Callable,
+    TYPE_CHECKING,
+)
+
+if TYPE_CHECKING:
+    from plotting_configuration import PlottingConfiguration
 
 from matplotlib import pyplot as plt
 import numpy as np
-from scipy.stats import sem
 
-from . import util
+from scipy.stats import sem # type: ignore
 
-# seaborn
+import util
+
+
+# TODO set style globally or at another location 
 plt.style.use('seaborn-v0_8-darkgrid')
 
-# set global colors
-colors = (
-    "tab:red",
-    "tab:green",
-    "tab:cyan",
-    "tab:olive",
-    "tab:purple",
-    "tab:brown",
-    "tab:pink",
-    "tab:blue",
-    "tab:orange",
-    "tab:gray",
-)
-
-
+@staticmethod
 def performance_evolution(plotting_configuration: PlottingConfiguration) -> None:
-    data = util.get_data(plotting_configuration)
 
-    performance_evolution_methods(plotting_configuration, data)
+    exploration_data: util.ExplorationDataRuntime = util.get_data(
+        input=plotting_configuration.input
+        )
+
+    performance_evolution_plot(plotting_configuration=plotting_configuration, 
+                               exploration_data=exploration_data,
+                               plotting=performance_evolution_method_means,
+                               )
+
+    performance_evolution_plot(plotting_configuration=plotting_configuration, 
+                               exploration_data=exploration_data,
+                               plotting=performance_evolution_method_separate,
+                               )
 
     return None
 
 
-def performance_evolution_methods(plotting_configuration: PlottingConfiguration, data):
-    plt.figure(figsize=plotting_configuration.figsize, dpi=plotting_configuration.dpi)
+@staticmethod
+def performance_evolution_plot(plotting_configuration: PlottingConfiguration, 
+                               exploration_data: util.ExplorationDataRuntime,
+                               plotting: Callable[[PlottingConfiguration, str, util.MethodDataRuntime, str], None],
+                               ) -> None: 
+
+    plt.figure( # type: ignore
+        figsize=plotting_configuration.figsize, 
+        dpi=plotting_configuration.dpi
+        ) 
 
     # plot performance evolution for each method
     # sort by method
-    keys: list[str] = sorted(data.keys(), key=lambda key: data[key][0])
+    method_keys: list[str] = sorted(exploration_data.keys(), 
+                                    key=lambda method_key: exploration_data[method_key][0]
+                                    )
+
     counter: int = 0
-    for key in keys:
-        performance_evolution_method(plotting_configuration, key, data[key][1], colors[counter % len(colors)])
+    for method_key in method_keys:
+
+        plotting(plotting_configuration, 
+                 method_key,
+                 exploration_data[method_key][1], 
+                 util.colors[counter % len(util.colors)]
+                 )
+
         counter += 1
 
     # assemble plot
-    plt.title(plotting_configuration.name + " - Performance Evolution", fontsize=plotting_configuration.fontsize)
-    plt.xlabel("Samples")
-    plt.ylabel("Log Runtime (ms)")
+    plt.title(f"{plotting_configuration.name} - Performance Evolution", fontsize=plotting_configuration.fontsize) # type: ignore 
+    plt.xlabel("Samples") # type: ignore
+    plt.ylabel("Log Runtime (ms)") # type: ignore 
 
-    # plot expert and default
+    # plot expert 
     if plotting_configuration.expert:
 
         if plotting_configuration.log:
@@ -61,8 +86,9 @@ def performance_evolution_methods(plotting_configuration: PlottingConfiguration,
             expert = plotting_configuration.expert if plotting_configuration.unit == 'runtime' else util.get_gflops(
                 plotting_configuration.expert)
 
-        plt.axhline(y=expert, color='black', linestyle='-', label='Expert', alpha=0.5)
+        plt.axhline(y=expert, color='black', linestyle='-', label='Expert', alpha=0.5) # type: ignore 
 
+    # plot default 
     if plotting_configuration.default:
 
         if plotting_configuration.log:
@@ -73,35 +99,42 @@ def performance_evolution_methods(plotting_configuration: PlottingConfiguration,
             default: float = plotting_configuration.default if plotting_configuration.unit == 'runtime' else util.get_gflops(
                 plotting_configuration.default)
 
-        plt.axhline(y=default, color='black', linestyle='-', label='Default', alpha=0.5)
+        plt.axhline(y=default, color='black', linestyle='-', label='Default', alpha=0.5) # type: ignore 
 
-    plt.legend()
+    plt.legend() # type: ignore 
 
     # save to file
     log_appendix = ""
     if plotting_configuration.log:
         log_appendix = "_log"
 
-    plt.savefig(
-        f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}.{plotting_configuration.format}",
+    plt.savefig( # type: ignore
+        f"{plotting_configuration.output}/{plotting_configuration.name}_{(str(plotting).split('_')[-1]).split(' ')[0]}{log_appendix}.{plotting_configuration.format}",
         dpi=plotting_configuration.dpi)
 
     return None
 
 
-def performance_evolution_method(plotting_configuration: PlottingConfiguration, method_key, method_data, color):
-    data_internal = {}
+@staticmethod
+def performance_evolution_method_separate(plotting_configuration: PlottingConfiguration,
+                                          method_key: str,
+                                          method_data: util.MethodDataRuntime,
+                                          color: str
+                                          ):
+
+    # get runtimes from individual runs of method 
+    data_internal: Dict[str, List[float]] = {}
     for key in method_data:
-        internal = []
+        internal: List[float]  = []
         for elem in method_data[key]:
             internal.append(elem[1])
 
         data_internal[key] = internal
 
-    # convert to data to represent performance evolution
+    # convert data to represent performance evolution
     for key in data_internal:
-        pe = []
-        minimum = data_internal[key][0]
+        pe: List[float] = []
+        minimum: float = data_internal[key][0]
         for elem in data_internal[key]:
             if elem < minimum:
                 minimum = elem
@@ -119,45 +152,126 @@ def performance_evolution_method(plotting_configuration: PlottingConfiguration, 
 
         data_internal[key] = pe
 
-    means = []
-    means_preparation = []
-    confidence = []
+    # create one pe graph for each run in method 
+    counter: int = 0
 
-    # prepare
-    counter = -1
+    for run in data_internal:
+
+        # create x-axis and y-axis for plot 
+        x: List[int] = list(range(len(data_internal[run])))
+        y: List[float] = data_internal[run]
+
+        # cut x and y if necessary
+        if plotting_configuration.limit:
+            x = x[:plotting_configuration.limit]
+            y = y[:plotting_configuration.limit]
+
+        # create plot 
+        plt.plot(x, # type: ignore
+                 y, 
+                 alpha=0.9, 
+                #  color=colors[counter % len(colors)], 
+                 color=color, 
+                 lw=1,
+                 label=f"{method_key}_{run[:-4]}"
+                 )
+
+        counter += 1
+
+    return None
+
+@staticmethod
+def performance_evolution_method_means(plotting_configuration: PlottingConfiguration, 
+                                       method_key: str, 
+                                       method_data: util.MethodDataRuntime, 
+                                       color: str
+                                       ):
+
+    # get runtimes from individual runs of method 
+    data_internal: Dict[str, List[float]] = {}
+    for key in method_data:
+        internal: List[float]  = []
+        for elem in method_data[key]:
+            internal.append(elem[1])
+
+        data_internal[key] = internal
+
+    # convert data to represent performance evolution
+    for key in data_internal:
+        pe: List[float] = []
+        minimum: float = data_internal[key][0]
+        for elem in data_internal[key]:
+            if elem < minimum:
+                minimum = elem
+
+            if plotting_configuration.log:
+                if plotting_configuration.unit == "gflops":
+                    pe.append(np.log10(util.get_gflops(minimum)))
+                else:
+                    pe.append(np.log10(minimum))
+            else:
+                if plotting_configuration.unit == "gflops":
+                    pe.append(util.get_gflops(minimum))
+                else:
+                    pe.append(minimum)
+
+        data_internal[key] = pe
+
+    # prepare: put data of individual runs to a list of list instead of a dictionary
+    counter: int = -1
+    means: List[float] = []
+    runs_of_method: List[List[float]] = []
+    confidence: List[float] = []
+    
     for key in data_internal:
         counter += 1
-        means_preparation.append([])
+        runs_of_method.append([])
         for elem in data_internal[key]:
-            means_preparation[counter].append(elem)
+            runs_of_method[counter].append(elem)
 
-    minElem = min(list(map(lambda x: len(x), means_preparation)))
+    # get shortest run and cut here 
+    minElem: int = min(list(map(lambda x: len(x), runs_of_method)))
+
+    # compute mean 
     for i in range(minElem):
-        means_internal = []
-        means_internal2 = []
-        for file in means_preparation:
-            means_internal.append(file[i])
-            means_internal2.append(file[i])
 
-        means.append(np.median(np.array(means_internal)))
-        confidence.append(sem(means_internal2) * 1.96)
+        # group all runs at position i 
+        runs_at_position: List[float] = [run[i] for run in runs_of_method]
 
-    # Plot
+        # compute mean for all runs at position i
+        means.append(float(np.median(np.array(runs_at_position))))
+
+        # compute confidence interval  
+        confidence.append(sem(runs_at_position) * 1.96) 
+
+    # create x range for plotting 
+    # cut means and x if necessary 
     x = range(len(means))
-
-    # cut means in and x if necessary
     if plotting_configuration.limit:
         x = x[:plotting_configuration.limit]
         means = means[:plotting_configuration.limit]
-    plt.plot(x, means, alpha=0.8, color=color, lw=2, label=method_key)
+
+    # plot means 
+    plt.plot(x,  # type: ignore 
+             means, 
+             alpha=0.5, 
+             color=color, 
+             lw=2, 
+             label=method_key
+             )
 
     # plot confidence interval
-    lower = []
-    upper = []
+    lower: List[float] = []
+    upper: List[float] = []
     for i in range(len(means)):
         lower.append(means[i] - confidence[i])
         upper.append(means[i] + confidence[i])
 
-    plt.fill_between(x, lower, upper, color=color, alpha=0.2)
+    plt.fill_between(x,  # type: ignore 
+                     lower, 
+                     upper, 
+                     color=color, 
+                     alpha=0.2
+                     ) 
 
     return None

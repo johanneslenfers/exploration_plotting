@@ -1,14 +1,18 @@
-#!/bin/python3.8
+#!/bin/python3.10
+from __future__ import annotations
 
-from .plotting_configuration import PlottingConfiguration
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from plotting_configuration import PlottingConfiguration
+
+import util
 
 import csv
 
-from . import util
-
-
+# TODO add type annotations here 
 def stats(plotting_configuration: PlottingConfiguration) -> None:
-    data = util.get_data_fully(plotting_configuration)
+    data = util.get_data_fully(plotting_configuration.input)
 
     # TODO think about more metrics
 

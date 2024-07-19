@@ -1,16 +1,34 @@
-#!/bin/python3.8
+#!/bin/python3.10
+from typing import (
+    Union,
+    Callable,
+    Dict
+)
+
 import argparse
+
+# import plotting methods as static methods
+from scatter import scatter
+from scatter_pe import scatter_pe
+from performance_evolution import performance_evolution
+from speedup import speedup
+from speedup_tuning import speedup_tuning
+from stats import stats
+from violin import violin
+from all import all
+from facet import facet_plot 
 
 
 class PlottingConfiguration:
+    """
+    A class that encapsulates all the information required for plotting.
+    """
 
     def __init__(self):
+
+        # define parser 
         plotting_parser = argparse.ArgumentParser(description='Plotting Parser')
-        plotting_parser.add_argument('-p', '--plot',
-                                     choices=['performance_evolution', 'scatter', 'facet', 'speedup_tuning', 'stats',
-                                              'speedup', 'violin', 'all'],
-                                     help='Plotting Method',
-                                     required=True)
+        plotting_parser.add_argument('-p', '--plot', choices=plotting_methods.keys(), help='Plotting Method', required=True)
         plotting_parser.add_argument('-i', '--input', help='Input Folder', required=True)
         plotting_parser.add_argument('-o', '--output', help='Output File')
         plotting_parser.add_argument('-e', '--expert', type=float, help='Expert Performance')
@@ -23,12 +41,13 @@ class PlottingConfiguration:
                                      choices=['runtime', 'gflops'],
                                      help='Unit ')
 
+
+        # parse args and initialize variables     
         args = plotting_parser.parse_args()
 
-        self.plot: str = args.plot
+        # method, input, output 
+        self.plotting_method: Callable[[PlottingConfiguration], None] = plotting_methods[args.plot]
         self.input: str = args.input
-
-        # parse output
         output: str = args.output
         self.output: str = ""
         if not output:
@@ -48,9 +67,8 @@ class PlottingConfiguration:
         self.expert: Union[float, None] = args.expert
         self.default: Union[float, None] = args.default
         self.limit: Union[int, None] = args.limit
-        self.format: Union[int, None] = args.format
+        self.format: Union[str, None] = args.format
 
-        # parse format
         if args.format is not None:
             self.format = args.format
         else:
@@ -70,9 +88,13 @@ class PlottingConfiguration:
         self.dpi = 1000
         self.fontsize = 22
 
+    def plot(self):
+        self.plotting_method(self)
+        pass
+
     def __str__(self):
         return f"""Plotting Configuration: 
-        plot: {self.plot}
+        plotting_method: {self.plotting_method}
         name: {self.name}
         input: {self.input}
         output: {self.output}
@@ -82,3 +104,16 @@ class PlottingConfiguration:
         limit: {self.limit}
         unit: {self.unit}
         """
+
+# register plotting methods 
+plotting_methods: Dict[str, Callable[[PlottingConfiguration], None]]= {
+    "scatter": scatter,
+    "scatter_pe": scatter_pe,
+    "performance_evolution": performance_evolution,
+    "facet": facet_plot,
+    "speedup_tuning": speedup_tuning,
+    "speedup": speedup,
+    "stats": stats,
+    "violin": violin,
+    "all": all,
+}

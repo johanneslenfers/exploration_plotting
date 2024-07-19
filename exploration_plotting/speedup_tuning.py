@@ -1,11 +1,12 @@
-#!/bin/python3.8
+#!/bin/python3.10
+from __future__ import annotations
 
-from .plotting_configuration import PlottingConfiguration
+from typing import TYPE_CHECKING
 
-import plotly.graph_objects as go
-import numpy as np
+if TYPE_CHECKING:
+    from plotting_configuration import PlottingConfiguration
 
-from . import util
+import util
 
 from matplotlib import pyplot as plt
 
@@ -14,23 +15,8 @@ from matplotlib import pyplot as plt
 # seaborn
 plt.style.use('seaborn-v0_8-darkgrid')
 
-# set global colors
-colors = (
-    "tab:red",
-    "tab:green",
-    "tab:cyan",
-    "tab:olive",
-    "tab:purple",
-    "tab:brown",
-    "tab:pink",
-    "tab:blue",
-    "tab:orange",
-    "tab:gray",
-)
-
-
 def speedup_tuning(plotting_configuration: PlottingConfiguration) -> None:
-    data = util.get_data_fully(plotting_configuration)
+    data = util.get_data_fully(plotting_configuration.input)
 
     # speedup_tuning_overlapped(data, plotting_configuration)
     # max_speedup(data, plotting_configuration)

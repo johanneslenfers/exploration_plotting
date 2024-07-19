@@ -1,7 +1,12 @@
-#!/bin/python3.8
+#!/bin/python3.10
+from __future__ import annotations
 
-from .plotting_configuration import PlottingConfiguration
-from . import util
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from plotting_configuration import PlottingConfiguration
+
+import util
 
 import numpy as np
 
@@ -13,7 +18,7 @@ import matplotlib.pyplot as plt
 
 
 def facet_plot(plotting_configuration: PlottingConfiguration) -> None:
-    data = util.get_data_fully(plotting_configuration)
+    data = util.get_data_fully(plotting_configuration.input)
 
     # Create subplots with shared x-axis
     for method in data:

@@ -1,16 +1,23 @@
-#!/bin/python3.8
+#!/bin/python3.10
+from __future__ import annotations
 
-from .plotting_configuration import PlottingConfiguration
+import util
 
-from . import util
-
-import plotly.graph_objects as go
+import plotly.graph_objects as go # type: ignore
 
 import numpy as np
 
+from typing import (
+    List,
+    TYPE_CHECKING,
+)
 
+if TYPE_CHECKING:
+    from plotting_configuration import PlottingConfiguration
+
+@staticmethod
 def scatter(plotting_configuration: PlottingConfiguration) -> None:
-    data = util.get_data_fully(plotting_configuration)
+    data = util.get_data_fully(plotting_configuration.input)
 
     for method in data:
 
@@ -18,7 +25,7 @@ def scatter(plotting_configuration: PlottingConfiguration) -> None:
                            xaxis=dict(title='Samples'),
                            yaxis=dict(title='Log Runtime (ms)'))
 
-        y = []
+        y: List[float] = []
         print(f"method: {method}")
         for run in data[method][1]:
 
@@ -37,7 +44,7 @@ def scatter(plotting_configuration: PlottingConfiguration) -> None:
 
         fig = go.Figure(data=trace, layout=layout)
 
-        fig.write_image(
+        fig.write_image( # type: ignore
             f"{plotting_configuration.output}/{plotting_configuration.name}_{method}_scatter.{plotting_configuration.format}")
 
     return None
