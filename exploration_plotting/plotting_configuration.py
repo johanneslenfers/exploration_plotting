@@ -2,6 +2,7 @@
 from typing import (
     Union,
     Callable,
+    Tuple,
     Dict
 )
 
@@ -17,6 +18,7 @@ from stats import stats
 from violin import violin
 from all import all
 from facet import facet_plot 
+from tuning_ranges import tuning_ranges
 
 
 class PlottingConfiguration:
@@ -24,7 +26,7 @@ class PlottingConfiguration:
     A class that encapsulates all the information required for plotting.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         # define parser 
         plotting_parser = argparse.ArgumentParser(description='Plotting Parser')
@@ -37,13 +39,14 @@ class PlottingConfiguration:
         plotting_parser.add_argument('-n', '--name', help='Give Name')
         plotting_parser.add_argument('-li', '--limit', type=int, help='Limit Plotting')
         plotting_parser.add_argument('-f', '--format', type=str, help='File format')
+        plotting_parser.add_argument('-pi', '--plot_invalid', action='store_true', help='Plot Invalid Rewrites')
         plotting_parser.add_argument('-u', '--unit',
                                      choices=['runtime', 'gflops'],
                                      help='Unit ')
 
 
         # parse args and initialize variables     
-        args = plotting_parser.parse_args()
+        args: argparse.Namespace = plotting_parser.parse_args()
 
         # method, input, output 
         self.plotting_method: Callable[[PlottingConfiguration], None] = plotting_methods[args.plot]
@@ -63,16 +66,22 @@ class PlottingConfiguration:
         else:
             self.name = str(self.output).split('/')[-1]
 
+
         # parse optional arguments
         self.expert: Union[float, None] = args.expert
         self.default: Union[float, None] = args.default
         self.limit: Union[int, None] = args.limit
         self.format: Union[str, None] = args.format
+        self.plot_invalid: bool = args.plot_invalid 
 
         if args.format is not None:
             self.format = args.format
         else:
             self.format = 'pdf'
+
+        self.plot_invalid = False
+        if args.plot_invalid:
+            self.plot_invalid = True
 
         self.log = False
         if args.log:
@@ -84,15 +93,15 @@ class PlottingConfiguration:
             self.unit: str = "runtime"
 
         # constant arguments
-        self.figsize = (10, 10)
+        self.figsize: Tuple[int, int] = (32, 8)
         self.dpi = 1000
         self.fontsize = 22
 
-    def plot(self):
+    def plot(self) -> None:
         self.plotting_method(self)
         pass
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"""Plotting Configuration: 
         plotting_method: {self.plotting_method}
         name: {self.name}
@@ -102,6 +111,8 @@ class PlottingConfiguration:
         default: {self.default}
         log: {self.log}
         limit: {self.limit}
+        file_format: {self.format}
+        plot_invalid: {self.plot_invalid}
         unit: {self.unit}
         """
 
@@ -116,4 +127,5 @@ plotting_methods: Dict[str, Callable[[PlottingConfiguration], None]]= {
     "stats": stats,
     "violin": violin,
     "all": all,
+    "tuning_ranges" : tuning_ranges,
 }

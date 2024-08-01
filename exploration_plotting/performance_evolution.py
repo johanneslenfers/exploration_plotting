@@ -20,7 +20,7 @@ import util
 
 
 # TODO set style globally or at another location 
-plt.style.use('seaborn-v0_8-darkgrid')
+# plt.style.use('seaborn-v0_8-darkgrid')
 
 @staticmethod
 def performance_evolution(plotting_configuration: PlottingConfiguration) -> None:
@@ -79,11 +79,11 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
     if plotting_configuration.expert:
 
         if plotting_configuration.log:
-            expert = np.log10(
+            expert: float = np.log10(
                 plotting_configuration.expert if plotting_configuration.unit == 'runtime' else util.get_gflops(
                     plotting_configuration.expert))
         else:
-            expert = plotting_configuration.expert if plotting_configuration.unit == 'runtime' else util.get_gflops(
+            expert: float= plotting_configuration.expert if plotting_configuration.unit == 'runtime' else util.get_gflops(
                 plotting_configuration.expert)
 
         plt.axhline(y=expert, color='black', linestyle='-', label='Expert', alpha=0.5) # type: ignore 
@@ -104,7 +104,7 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
     plt.legend() # type: ignore 
 
     # save to file
-    log_appendix = ""
+    log_appendix: str = ""
     if plotting_configuration.log:
         log_appendix = "_log"
 
@@ -120,7 +120,7 @@ def performance_evolution_method_separate(plotting_configuration: PlottingConfig
                                           method_key: str,
                                           method_data: util.MethodDataRuntime,
                                           color: str
-                                          ):
+                                          )-> None:
 
     # get runtimes from individual runs of method 
     data_internal: Dict[str, List[float]] = {}

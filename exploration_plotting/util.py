@@ -19,7 +19,6 @@ ExplorationData = Dict[str, Tuple[int, Dict[str, List[Dict[str, str]]]]]
 MethodData = Dict[str, List[Dict[str, str]]]
 
 
-
 # global colors 
 # TODO think about that 
 colors: List[str] = [
@@ -44,8 +43,8 @@ def pather(folder: Tuple[str, str]) -> float:
 @staticmethod
 def get_gflops(runtime: float) -> float:
     MatrixSize = 1024
-    NumOps = 2 * MatrixSize ** 3
-    gflops = 1.0e-9 * NumOps / runtime
+    NumOps: int = 2 * MatrixSize ** 3
+    gflops: float = 1.0e-9 * NumOps / runtime
 
     return gflops
 
@@ -126,7 +125,7 @@ def get_runtime_index(reader: Iterator[list[str]]) -> int:
 
 @staticmethod
 def process_subfolder(sub_folder: str) -> Dict[str, List[Tuple[bool, float]]]:
-    files = os.listdir(sub_folder + "/" + "csv")
+    files: List[str] = os.listdir(sub_folder + "/" + "csv")
 
     fileData: Dict[str, List[Tuple[bool, float]]] = {}
     for f in files:
@@ -184,7 +183,7 @@ def get_data_fully(input: str) -> ExplorationData:
 
 @staticmethod
 def process_subfolder_fully(sub_folder: str) -> MethodData:
-    files = os.listdir(sub_folder + "/" + "csv")
+    files: list[str] = os.listdir(sub_folder + "/" + "csv")
 
     fileData: MethodData = {}
     for f in files:
@@ -199,7 +198,7 @@ def process_file_fully(sub_folder: str, file: str) -> List[Dict[str, str]]:
     ifd = open(str(sub_folder + '/' + file), mode='r')
 
     csv_reader = csv.reader(ifd, delimiter=',')
-    header = next(csv_reader)
+    header: list[str]= next(csv_reader)
 
     # create list of dicts
     data: List[Dict[str, str]] = []

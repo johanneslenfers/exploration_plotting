@@ -27,7 +27,7 @@ def scatter_pe(plotting_configuration: PlottingConfiguration) -> None:
         plt.clf()
 
         # seaborn
-        plt.style.use('seaborn-v0_8-darkgrid')
+        # plt.style.use('seaborn-v0_8-darkgrid')
 
         # assemble plot
         plt.title(plotting_configuration.name + " - Scatter", fontsize=plotting_configuration.fontsize) # type: ignore
