@@ -184,6 +184,7 @@ def get_data_fully(input: str) -> ExplorationData:
 @staticmethod
 def process_subfolder_fully(sub_folder: str) -> MethodData:
     files: list[str] = os.listdir(sub_folder + "/" + "csv")
+    files = sorted(files, reverse=False)
 
     fileData: MethodData = {}
     for f in files:
