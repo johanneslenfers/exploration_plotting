@@ -50,7 +50,7 @@ def tuning_ranges(plotting_configuration: PlottingConfiguration) -> None:
             values_max: List[float] = []
             values_min: List[float] = []
 
-            invalid_limit: int = 10**5
+            invalid_limit: int = 10**4
 
             for group in grouped_by_tuning:
 
@@ -101,7 +101,8 @@ def tuning_ranges(plotting_configuration: PlottingConfiguration) -> None:
             x: List[int] = list(range(len(values_max)))
 
             # compute colors
-            colors_values: List[str] = ['#C44E52' if value_max == np.log10(invalid_limit) else '#4C72B0' for value_max in values_max]
+            # colors_values: List[str] = ['#C44E52' if value_max == np.log10(invalid_limit) else '#4C72B0' for value_max in values_max]
+            colors_values: List[str] = ['#4C72B0' for _ in values_max]
 
             # convert maximum to height 
             values_max = [max_val - min_val for max_val, min_val in zip(values_max, values_min)]
@@ -110,8 +111,12 @@ def tuning_ranges(plotting_configuration: PlottingConfiguration) -> None:
             plt.subplot(1, len(exploration_data[method][1]), count) # type: ignore
             # plt.subplot(count) # type: ignore
 
+            plt.xlim(left=0, right=len(values_min)) # type: ignore
+            plt.ylim(bottom=-2.5, top=4) # type: ignore
+
             # assemble plot
-            plt.title(f"{plotting_configuration.name} - {method} - Tuning Ranges", fontsize=plotting_configuration.fontsize) # type: ignore 
+            # plt.title(f"{plotting_configuration.name} - {method} - Tuning Ranges", fontsize=plotting_configuration.fontsize) # type: ignore 
+            plt.title(f"{run}", fontsize=plotting_configuration.fontsize) # type: ignore 
             plt.xlabel("Rewrites") # type: ignore
             plt.ylabel("Performance Range Runtime (ms) log" if plotting_configuration.log else "Performance Range Runtime (ms)") # type: ignore 
             # plt.ylim(10**-6, 10)
@@ -140,8 +145,12 @@ def tuning_ranges(plotting_configuration: PlottingConfiguration) -> None:
             plt.plot(pe_x, # type: ignore
                      pe, 
                      alpha=0.9, 
-                     color='red', 
-                     lw=1, 
+                    #  color='#4EC4B0', # teal green 
+                    #  color='#B0A64C', # mustard yellow 
+                    # color='grey',
+                    color='#C44E52', # red 
+                    # color='#FFD700',
+                     lw=2, 
                      label=run
                      ) 
 

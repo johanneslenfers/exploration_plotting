@@ -1,7 +1,7 @@
 #!/bin/python3.10
 from plotting_configuration import PlottingConfiguration
 
-def main():
+def main() -> None:
 
     plot_config: PlottingConfiguration = PlottingConfiguration()
     plot_config.plot()

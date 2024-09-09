@@ -16,8 +16,8 @@ ExplorationDataRuntime = Dict[str, Tuple[int, Dict[str, List[Tuple[bool, float]]
 MethodDataRuntime = Dict[str, List[Tuple[bool, float]]]
 
 ExplorationData = Dict[str, Tuple[int, Dict[str, List[Dict[str, str]]]]]
+MultipleExplorationData = Dict[str, Dict[str, Tuple[int, Dict[str, List[Dict[str, str]]]]]]
 MethodData = Dict[str, List[Dict[str, str]]]
-
 
 # global colors 
 # TODO think about that 
@@ -163,6 +163,30 @@ def process_file(sub_folder: str, file: str) -> List[Tuple[bool, float]]:
 
     return data
 
+@staticmethod
+def get_multiple_data_fully(input: str) -> MultipleExplorationData:
+
+    # for each exploration folder in the input folder
+    explorations: list[tuple[str, str]] = [(f.name, f.path) for f in os.scandir(input) if f.is_dir()]
+    explorations = sorted(explorations, key=pather, reverse=False)
+    multiple_data: MultipleExplorationData = {}
+
+    for exploration in explorations:
+
+        # get sub folders from parent folder 
+        folders: list[tuple[str, str]] = [(f.name, f"{f.path}") for f in os.scandir(f"{input}/{exploration[0]}") if f.is_dir()]
+        folders = sorted(folders, key=pather, reverse=False)
+
+        # get data from input folders
+        data: ExplorationData = {}
+        counter: int = 0
+        for (name, path) in folders:
+            data[name] = (counter, process_subfolder_fully(path))
+            counter += 1
+
+        multiple_data[exploration[0]] = data 
+
+    return multiple_data
 
 @staticmethod
 def get_data_fully(input: str) -> ExplorationData:

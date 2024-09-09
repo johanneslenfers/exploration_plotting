@@ -19,6 +19,7 @@ from violin import violin
 from all import all
 from facet import facet_plot 
 from tuning_ranges import tuning_ranges
+from tuning_budget_analysis import tuning_budget_analysis
 
 
 class PlottingConfiguration:
@@ -128,4 +129,5 @@ plotting_methods: Dict[str, Callable[[PlottingConfiguration], None]]= {
     "violin": violin,
     "all": all,
     "tuning_ranges" : tuning_ranges,
+    "tuning_budget_analysis": tuning_budget_analysis,
 }
