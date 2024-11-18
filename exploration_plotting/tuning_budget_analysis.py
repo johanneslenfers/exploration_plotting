@@ -20,8 +20,9 @@ from matplotlib.ticker import LogFormatter
 
 @staticmethod
 def tuning_budget_analysis(plotting_configuration: PlottingConfiguration) -> None:
-    mean_speedup_relative(plotting_configuration)
+    # mean_speedup_relative(plotting_configuration)
     mean_speedup_absolute(plotting_configuration)
+
 
 @staticmethod
 def mean_speedup_relative(plotting_configuration: PlottingConfiguration) -> None:
@@ -30,7 +31,7 @@ def mean_speedup_relative(plotting_configuration: PlottingConfiguration) -> None
 
     plt.clf()
     plt.figure( # type: ignore
-        figsize=(10, 10), 
+        figsize=(8, 4), 
         dpi=plotting_configuration.dpi
     )
 
@@ -43,18 +44,22 @@ def mean_speedup_relative(plotting_configuration: PlottingConfiguration) -> None
     plt.ylabel("Fraction Of Relative Speedup Within Each Tuning Run") # type: ignore 
     plt.xlim(left=0, right=50) # type: ignore
     plt.ylim(bottom=0, top=1.01) # type: ignore
+    plt.tight_layout() # type: ignore
 
     for exploration_data in multiple_exploration_data:
-        for method in multiple_exploration_data[exploration_data]:
+
+        # for method in multiple_exploration_data[exploration_data]:
+        method:str  = "Exhaustive"
+        print(f"method: {method}")
             # we do not assume multiple runs for the tuning budget analysis 
             # otherwise, plot as separate lines 
-            for run in multiple_exploration_data[exploration_data][method][1]:
+        for run in multiple_exploration_data[exploration_data][method][1]:
 
-                # TODO: extract this automatically
-                limits: List[int] = list(range(1, 51))
+            # TODO: extract this automatically
+            limits: List[int] = list(range(1, 51))
 
-                grouped_by_tuning: List[List[Dict[str, str]]] = util.group_by_tuning(multiple_exploration_data[exploration_data][method][1][run])
-                plot_average_relative_speedup(grouped_by_tuning=grouped_by_tuning, limits=limits, name=f"{exploration_data}")
+            grouped_by_tuning: List[List[Dict[str, str]]] = util.group_by_tuning(multiple_exploration_data[exploration_data][method][1][run])
+            plot_average_relative_speedup(grouped_by_tuning=grouped_by_tuning, limits=limits, name=f"{exploration_data}", axes=plt)
 
 
     # hline with 95 percent 
@@ -85,58 +90,105 @@ def mean_speedup_absolute(plotting_configuration: PlottingConfiguration) -> None
 
     plt.clf()
     test: plt.Figure = plt.figure( # type: ignore
-        figsize=(10, 10), 
+        figsize=(8, 8), 
         dpi=plotting_configuration.dpi
     )
-    fig, ax = plt.subplots(figsize=(8, 8)) # type: ignore
+    # fig, ax = plt.subplots(figsize=(8, 4)) # type: ignore
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 6))  # 2 rows, 1 column
+    # fig.suptitle("Speedup", fontsize=12)
 
     # assemble plot
-    plt.title(f"Speedup Achieved Through Parameter-Tuning", fontsize=plotting_configuration.fontsize) # type: ignore 
-    plt.xlabel("Tuning Samples") # type: ignore
-    plt.ylabel("Mean Of Speedups Of All Tuning Runs") # type: ignore 
+    ax1.set_title(f"Mean of Speedup Achieved per Parameter-Tuning Run", fontsize=plotting_configuration.fontsize) # type: ignore 
+    ax2.set_title(f"Proportion of Speedup Achieved per Parameter-Tuning", fontsize=plotting_configuration.fontsize) # type: ignore 
+    ax2.set_xlabel("Tuning Samples") # type: ignore
+    ax1.set_ylabel("Speedup per Tuning Run") # type: ignore 
+    ax2.set_ylabel("Proportion of Speedup") # type: ignore
 
-    plt.xlim(left=1, right=50) # type: ignore
-    plt.ylim(bottom=1, top=2000) # type: ignore
+    ax1.set_xlim(left=1, right=50) # type: ignore
+    ax2.set_xlim(left=0, right=50) # type: ignore
+    ax1.set_ylim(bottom=1, top=1100) # type: ignore
+    ax2.set_ylim(bottom=0, top=1.02) # type: ignore
 
-    for exploration_data in multiple_exploration_data:
-        for method in multiple_exploration_data[exploration_data]:
+    for exploration_data in sorted(multiple_exploration_data.keys()):
+    # for exploration_data in multiple_exploration_data:
+        method:str  = "Exhaustive"
+        # print(f"method: {method}")
+
+        # for method in multiple_exploration_data[exploration_data]:
+        # we do not assume multiple runs for the tuning budget analysis 
+        # otherwise, plot as separate lines 
+        for run in multiple_exploration_data[exploration_data][method][1]:
+
+            # TODO: extract this automatically
+            limits: List[int] = list(range(1, 51))
+
+            grouped_by_tuning: List[List[Dict[str, str]]] = util.group_by_tuning(multiple_exploration_data[exploration_data][method][1][run])
+            plot_average_total_speedup(plotting_configuration=plotting_configuration, 
+                                        grouped_by_tuning=grouped_by_tuning, 
+                                        limits=limits, 
+                                        name=f"{exploration_data}",
+                                        axes=ax1
+                                        )
+
+    # for exploration_data in multiple_exploration_data:
+    # ax2.hlines(y=0.90, xmin=0, xmax=50, color='black', linestyle='-', label='90%', alpha=0.8, lw=1) # type: ignore
+    # ax2.hlines(y=0.95, xmin=0, xmax=50, color='black', linestyle='-', label='90%', alpha=0.8, lw=1) # type: ignore
+    for exploration_data in sorted(multiple_exploration_data.keys()):
+        method:str  = "Exhaustive"
+            # for method in multiple_exploration_data[exploration_data]:
             # we do not assume multiple runs for the tuning budget analysis 
             # otherwise, plot as separate lines 
-            for run in multiple_exploration_data[exploration_data][method][1]:
+        for run in multiple_exploration_data[exploration_data][method][1]:
 
-                # TODO: extract this automatically
-                limits: List[int] = list(range(1, 51))
+            # TODO: extract this automatically
+            limits: List[int] = list(range(1, 51))
 
-                grouped_by_tuning: List[List[Dict[str, str]]] = util.group_by_tuning(multiple_exploration_data[exploration_data][method][1][run])
-                plot_average_total_speedup(plotting_configuration=plotting_configuration, 
-                                           grouped_by_tuning=grouped_by_tuning, 
-                                           limits=limits, 
-                                           name=f"{exploration_data}"
-                                           )
+            grouped_by_tuning: List[List[Dict[str, str]]] = util.group_by_tuning(multiple_exploration_data[exploration_data][method][1][run])
+            plot_average_relative_speedup(grouped_by_tuning=grouped_by_tuning, 
+                                            limits=limits, 
+                                            name=f"{exploration_data}",
+                                            axes=ax2
+                                            )
+
 
     # hline with 95 percent 
     # plt.axhline(y=0.95, color='black', linestyle='-', label='95%', alpha=1, lw=2) # type: ignore 
 
-    plt.legend() # type: ignore
+    # ax1.legend() # type: ignore
+    # ax2.legend()
+
+    # plt.legend(loc='upper left') # type: ignore
+    plt.tight_layout()
+
+    # plt.tight_layout(rect=[0, 0, 0.85, 1])
+
+    # legend = ax1.legend(loc="center right", bbox_to_anchor=(1.2, 0.5))
+    legend = ax2.legend() # type: ignore
+    legend.get_frame().set_visible(True) # type: ignore
+    legend.get_frame().set_facecolor("white")  # Set the frame face color to white # type: ignore
+    legend.get_frame().set_edgecolor("black")  # Set the border color # type: ignore
+    legend.get_frame().set_linewidth(1.5)      # Set the border line width # type: ignore
 
     # y-axis log scale
-    ax.set_yscale('log') # type: ignore 
+    ax1.set_yscale('log') # type: ignore 
+    # ax1.set_yscale('log') # type: ignore 
     # Use LogFormatter to show the actual values
-    ax.yaxis.set_major_formatter(LogFormatter()) # type: ignore
+    ax1.yaxis.set_major_formatter(LogFormatter()) # type: ignore
 
     log_appendix: str = ""
     if plotting_configuration.log:
         log_appendix = "_log"
 
-    plt.savefig( # type: ignore
-        f"{plotting_configuration.output}/{plotting_configuration.name}_absolute{log_appendix}.{plotting_configuration.format}",
+    fig.savefig( # type: ignore
+        f"{plotting_configuration.output}/{plotting_configuration.name}{log_appendix}.{plotting_configuration.format}",
         dpi=plotting_configuration.dpi)
 
     return None
 
 
 @staticmethod
-def plot_average_total_speedup(plotting_configuration: PlottingConfiguration, grouped_by_tuning: List[List[Dict[str, str]]], limits: List[int], name: str) -> None:
+def plot_average_total_speedup(plotting_configuration: PlottingConfiguration, grouped_by_tuning: List[List[Dict[str, str]]], limits: List[int], name: str, axes) -> None:
 
     avg_speedup_best: Dict[str, Tuple[float, float]] = get_average_total_speedup_of_all(
         plotting_configuration=plotting_configuration,
@@ -155,12 +207,12 @@ def plot_average_total_speedup(plotting_configuration: PlottingConfiguration, gr
     confidence.insert(0, 0)
 
     # plot average speedup
-    plt.plot( # type: ignore
+    axes.plot( # type: ignore
         limits,
         values, 
         alpha=1, 
         lw=2,
-        label=f"{name}"
+        label=f"{util.names_map[name]}"
         )
 
     # plot confidence interval
@@ -170,7 +222,7 @@ def plot_average_total_speedup(plotting_configuration: PlottingConfiguration, gr
         lower.append(values[i] - confidence[i])
         upper.append(values[i] + confidence[i])
 
-    plt.fill_between( # type: ignore
+    axes.fill_between( # type: ignore
         limits, 
         lower, 
         upper, 
@@ -179,9 +231,15 @@ def plot_average_total_speedup(plotting_configuration: PlottingConfiguration, gr
 
     return None
 
+@staticmethod
+def get_index_of_portion(values: List[float], portion: float) -> int:
+    for i in range(len(values)):
+        if values[i] > portion:
+            return i
+    return -1
 
 @staticmethod
-def plot_average_relative_speedup(grouped_by_tuning: List[List[Dict[str, str]]], limits: List[int], name: str) -> None:
+def plot_average_relative_speedup(grouped_by_tuning: List[List[Dict[str, str]]], limits: List[int], name: str, axes) -> None:
 
     avg_speedup_best: Dict[str, Tuple[float, float]] = get_average_relative_speedup_of_all(
         grouped_by_tuning=grouped_by_tuning, 
@@ -196,12 +254,12 @@ def plot_average_relative_speedup(grouped_by_tuning: List[List[Dict[str, str]]],
     confidence.insert(0, 0)
 
     # plot average speedup
-    plt.plot( # type: ignore
+    axes.plot( # type: ignore
         limits,
         values, 
         alpha=1, 
         lw=2,
-        label=f"{name}"
+        label=f"{util.names_map[name]}"
         )
 
     # plot confidence interval
@@ -211,12 +269,26 @@ def plot_average_relative_speedup(grouped_by_tuning: List[List[Dict[str, str]]],
         lower.append(values[i] - confidence[i])
         upper.append(values[i] + confidence[i])
 
-    plt.fill_between( # type: ignore
+    axes.fill_between( # type: ignore
         limits, 
         lower, 
         upper, 
         alpha=0.2
         ) 
+
+    # # get 90 percent line (roughly)
+    # index: int = get_index_of_portion(values, 0.9)
+
+    # x: list[float] = [index]
+    # y: list[float] = [values[index]]
+    # axes.scatter( # type: ignore 
+    #     x=x,
+    #     y=y,
+    #     color='#1a5e92', 
+    #     alpha=1, 
+    #     s=10,  # size of the dots
+    #     # label=f"90%"
+    # )
 
     return None
 

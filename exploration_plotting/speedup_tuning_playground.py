@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 # from scipy.stats import sem
 
 # seaborn
-plt.style.use('seaborn-v0_8-darkgrid')
+# plt.style.use('seaborn-v0_8-darkgrid')
 
 def speedup_tuning(plotting_configuration: PlottingConfiguration) -> None:
     data = util.get_data_fully(plotting_configuration.input)

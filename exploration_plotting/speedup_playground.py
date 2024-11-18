@@ -14,12 +14,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 # from scipy.stats import sem
 
+import util 
+
 # seaborn
-plt.style.use('seaborn-v0_8-darkgrid')
+# plt.style.use('seaborn-v0_8-darkgrid')
 
 
 def speedup(plotting_configuration: PlottingConfiguration) -> None:
-    data = util.get_data_fully(plotting_configuration)
+    data = util.get_data_fully(plotting_configuration.input)
 
     speedup_total_std(data, plotting_configuration)
     # speedup_total_grouped_by_category(data, plotting_configuration)

@@ -12,15 +12,12 @@ if TYPE_CHECKING:
     from plotting_configuration import PlottingConfiguration
 
 from matplotlib import pyplot as plt
+from matplotlib.ticker import FuncFormatter
 import numpy as np
 
 from scipy.stats import sem # type: ignore
 
 import util
-
-
-# TODO set style globally or at another location 
-# plt.style.use('seaborn-v0_8-darkgrid')
 
 @staticmethod
 def performance_evolution(plotting_configuration: PlottingConfiguration) -> None:
@@ -32,11 +29,6 @@ def performance_evolution(plotting_configuration: PlottingConfiguration) -> None
     performance_evolution_plot(plotting_configuration=plotting_configuration, 
                                exploration_data=exploration_data,
                                plotting=performance_evolution_method_means,
-                               )
-
-    performance_evolution_plot(plotting_configuration=plotting_configuration, 
-                               exploration_data=exploration_data,
-                               plotting=performance_evolution_method_separate,
                                )
 
     return None
@@ -53,11 +45,9 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
         dpi=plotting_configuration.dpi
         ) 
 
-    # plot performance evolution for each method
-    # sort by method
-    method_keys: list[str] = sorted(exploration_data.keys(), 
-                                    key=lambda method_key: exploration_data[method_key][0]
-                                    )
+    fig, ax = plt.subplots(figsize=(5, 5)) # type: ignore
+
+    method_keys: list[str] = sorted(exploration_data.keys())
 
     counter: int = 0
     for method_key in method_keys:
@@ -73,7 +63,7 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
     # assemble plot
     plt.title(f"{plotting_configuration.name} - Performance Evolution", fontsize=plotting_configuration.fontsize) # type: ignore 
     plt.xlabel("Samples") # type: ignore
-    plt.ylabel("Log Runtime (ms)") # type: ignore 
+    plt.ylabel("Runtime (ms)") # type: ignore 
 
     # plot expert 
     if plotting_configuration.expert:
@@ -101,6 +91,12 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
 
         plt.axhline(y=default, color='black', linestyle='-', label='Default', alpha=0.5) # type: ignore 
 
+
+    # y-axis log scale 
+    ax.set_yscale('log') # type: ignore 
+    ax.yaxis.set_major_formatter(FuncFormatter(util.log_formatter)) # type: ignore
+
+    plt.tight_layout() # type: ignore
     plt.legend() # type: ignore 
 
     # save to file
@@ -254,9 +250,9 @@ def performance_evolution_method_means(plotting_configuration: PlottingConfigura
     # plot means 
     plt.plot(x,  # type: ignore 
              means, 
-             alpha=0.5, 
+             alpha=0.8, 
              color=color, 
-             lw=2, 
+             lw=3, 
              label=method_key
              )
 
@@ -267,11 +263,11 @@ def performance_evolution_method_means(plotting_configuration: PlottingConfigura
         lower.append(means[i] - confidence[i])
         upper.append(means[i] + confidence[i])
 
-    plt.fill_between(x,  # type: ignore 
-                     lower, 
-                     upper, 
-                     color=color, 
-                     alpha=0.2
-                     ) 
+    # plt.fill_between(x,  # type: ignore 
+    #                  lower, 
+    #                  upper, 
+    #                  color=color, 
+    #                  alpha=0.2
+    #                  ) 
 
     return None

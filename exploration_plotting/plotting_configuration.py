@@ -12,13 +12,15 @@ import argparse
 from scatter import scatter
 from scatter_pe import scatter_pe
 from performance_evolution import performance_evolution
-from speedup import speedup
-from speedup_tuning import speedup_tuning
+from performance_evolution_budget import performance_evolution_budget
+from performance_evolution_grouped import performance_evolution_grouped
+from speedup_stacking import speedup_stacking
+from speedup_playground import speedup
+from speedup_tuning_playground import speedup_tuning
 from stats import stats
 from violin import violin
-from all import all
 from facet import facet_plot 
-from tuning_ranges import tuning_ranges
+from tuning_ranges_playground import tuning_ranges_playground
 from tuning_budget_analysis import tuning_budget_analysis
 
 
@@ -94,9 +96,9 @@ class PlottingConfiguration:
             self.unit: str = "runtime"
 
         # constant arguments
-        self.figsize: Tuple[int, int] = (32, 8)
+        self.figsize: Tuple[int, int] = (8, 8)
         self.dpi = 1000
-        self.fontsize = 22
+        self.fontsize = 11
 
     def plot(self) -> None:
         self.plotting_method(self)
@@ -122,12 +124,14 @@ plotting_methods: Dict[str, Callable[[PlottingConfiguration], None]]= {
     "scatter": scatter,
     "scatter_pe": scatter_pe,
     "performance_evolution": performance_evolution,
+    "performance_evolution_budget": performance_evolution_budget,
+    "performance_evolution_grouped": performance_evolution_grouped,
     "facet": facet_plot,
-    "speedup_tuning": speedup_tuning,
-    "speedup": speedup,
+    "speedup_playground": speedup,
+    "speedup_tuning_playground": speedup_tuning,
+    "speedup_stack" : speedup_stacking,
     "stats": stats,
     "violin": violin,
-    "all": all,
-    "tuning_ranges" : tuning_ranges,
+    "tuning_ranges_playground" : tuning_ranges_playground,
     "tuning_budget_analysis": tuning_budget_analysis,
 }

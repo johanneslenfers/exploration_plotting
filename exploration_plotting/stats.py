@@ -19,6 +19,12 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
 
     # TODO think about more metrics
 
+    total_executions: int = 0
+    execution_counter: int =  0
+    successful_execution_counter: int = 0
+    total_samples_counter: int = 0
+    valid_samples_counter: int = 0
+
     # process stats
     runs_stats: Dict[str, List[str | int | float]] = {}
     for method in exploration_data:
@@ -27,6 +33,22 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
         for run in exploration_data[method][1]:
             # samples
             samples: int = len(exploration_data[method][1][run])
+
+
+            # get valid samples 
+
+            # filter samples 
+            executions: list[Dict[str, str]] = list(filter(lambda x: x['error-level'] == "None" or "EXECUTION_ERROR" in x['error-level'], exploration_data[method][1][run]))
+            successful_executions: list[Dict[str, str]] = list(filter(lambda x: x['error-level'] == "None", exploration_data[method][1][run]))
+
+            # [sample['error-level'] == "None" for sample in exploration_data[method][1][run]]
+
+            # get samples that are either valid or have an execution error 
+            total_samples_counter += samples
+            execution_counter += len(executions)
+            successful_execution_counter += len(successful_executions)
+
+            total_executions += sum([int(sample['executions ']) for sample in executions])
 
             # tuning_runs/rewrites
             grouped_by_tuning: List[List[Dict[str, str]]] = util.group_by_tuning(exploration_data[method][1][run])
@@ -50,6 +72,8 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
             # len(list(filter([])))
             valid_samples: int = len([item for item in numbers if item != -1])
             valid_samples_fraction: float = valid_samples / len(numbers) * 100
+
+            valid_samples_counter += valid_samples
 
             # if all samples of a tuning run are invalid, the rewrites is considered invalid
             invalid_rewrites: int = 0
@@ -83,6 +107,15 @@ def stats(plotting_configuration: PlottingConfiguration) -> None:
                 f"{minimum_index_percent:.2f}"
             ]
             run_counter += 1
+
+
+    print(f"benchmark: {plotting_configuration.name}")
+    print(f"total samples: {total_samples_counter}")
+    print(f"total valid samples: {valid_samples_counter}")
+    print(f"executed samples: {execution_counter}")
+    print(f"successfully executed samples: {successful_execution_counter}")
+    print(f"total executions: {total_executions}")
+    print("\n")
 
     # write runs_stats to file
     filename: str = f"{plotting_configuration.output}/{plotting_configuration.name}.csv"
