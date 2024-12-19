@@ -40,11 +40,9 @@ class PlottingConfiguration:
             self.output = output
 
         # parse name
-        self.name = str(self.output).split('/')[-1]
+        self.name: str = str(self.output).split('/')[-1]
 
         # parse optional arguments
-        self.expert: float | None = args.expert
-        self.default: float | None = args.default
         self.limit: int | None = args.limit
         self.format: str | None = args.format
 
@@ -72,8 +70,6 @@ class PlottingConfiguration:
         name: {self.name}
         input: {self.input}
         output: {self.output}
-        expert: {self.expert}
-        default: {self.default}
         log: {self.log}
         limit: {self.limit}
         file_format: {self.format}
