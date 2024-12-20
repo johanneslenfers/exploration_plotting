@@ -57,7 +57,7 @@ def grouped_order_performance_evolution(plotting_configuration: PlottingConfigur
 
         # get global min 
         # get global max
-        global_ranges: tuple[float, float] = get_global_range(experiment_data[benchmark])
+        global_ranges: tuple[float, float] = util.get_global_range(experiment_data[benchmark])
         # add some space 
         global_ranges = (global_ranges[0] * 0.8, global_ranges[1] * 1.2) 
 
@@ -102,6 +102,11 @@ def grouped_order_performance_evolution(plotting_configuration: PlottingConfigur
 
                     # compute confidence interval  
                     confidence.append(sem(runs_at_position) * 1.96) 
+
+                # cut off if limit is set
+                if plotting_configuration.limit is not None:
+                    means = means[:plotting_configuration.limit]
+                    confidence = confidence[:plotting_configuration.limit]
 
                 x = range(len(means))
 
@@ -148,30 +153,4 @@ def grouped_order_performance_evolution(plotting_configuration: PlottingConfigur
 
     return None
 
-
-def get_global_range(benchmark_data: util.BenchmarkData) -> tuple[float, float]: 
-
-    minimum: float = float('inf')
-    maximum: float = 0.0
-
-    for order in benchmark_data:
-        for method in order:
-
-            # collect min and max for all tuning runs for this method
-            method_performance_min: list[float] = []
-            method_performance_max: list[float] = []
-            for tuning_run in order[method]:
-                # get min/max for this tuning run 
-                method_performance_min.append(min([sample.runtime for sample in tuning_run]))
-                # for performance evolution we need the first default configuration, which might be better than the worst
-                method_performance_max.append(tuning_run[0].runtime)
-
-            # compare if mean of min/max is the new global min/max
-            if(np.mean(method_performance_min)) < minimum:
-                minimum = float(np.mean(method_performance_min))
-            
-            if(np.mean(method_performance_max)) > maximum:
-                maximum = float(np.mean(method_performance_max))
-
-    return (minimum, maximum)
 

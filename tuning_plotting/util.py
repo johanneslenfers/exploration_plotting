@@ -6,6 +6,8 @@ import os
 import re
 import ast
 
+import numpy as np
+
 ParameterConfiguration = dict[str, float | tuple[float]]
 
 @dataclass
@@ -198,3 +200,29 @@ def log_formatter(value, tick_number): # type: ignore
     else:
         return f"{value:.0f}" 
 
+@staticmethod
+def get_global_range(benchmark_data: BenchmarkData) -> tuple[float, float]: 
+
+    minimum: float = float('inf')
+    maximum: float = 0.0
+
+    for order in benchmark_data:
+        for method in order:
+
+            # collect min and max for all tuning runs for this method
+            method_performance_min: list[float] = []
+            method_performance_max: list[float] = []
+            for tuning_run in order[method]:
+                # get min/max for this tuning run 
+                method_performance_min.append(min([sample.runtime for sample in tuning_run]))
+                # for performance evolution we need the first default configuration, which might be better than the worst
+                method_performance_max.append(tuning_run[0].runtime)
+
+            # compare if mean of min/max is the new global min/max
+            if(np.mean(method_performance_min)) < minimum:
+                minimum = float(np.mean(method_performance_min))
+            
+            if(np.mean(method_performance_max)) > maximum:
+                maximum = float(np.mean(method_performance_max))
+
+    return (minimum, maximum)
