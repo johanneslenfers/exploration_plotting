@@ -238,6 +238,8 @@ def performance_evolution_benchmark(plotting_configuration: PlottingConfiguratio
     axis.set_xlim(left=left_right[benchmark][0], right=left_right[benchmark][1]) # type: ignore
     axis.set_ylim(bottom=bottom_top[benchmark][0], top=bottom_top[benchmark][1]) # type: ignore
 
+    axis.axhline(y=expert[benchmark], color='black', linestyle='-', label='Expert', alpha=1) # type: ignore 
+
     # create pe graph for each method
     method_count = 0
     # for method in sorted(benchmark_data.keys()):
@@ -343,6 +345,7 @@ def performance_evolution_method_means(plotting_configuration: PlottingConfigura
         x = x[:plotting_configuration.limit]
         means = means[:plotting_configuration.limit]
 
+
     # plot means 
     axis.plot(x,  # type: ignore 
              means, 
@@ -359,8 +362,6 @@ def performance_evolution_method_means(plotting_configuration: PlottingConfigura
              marker='x',
              lw=2, 
              )
-
-    axis.axhline(y=expert[benchmark], color='black', linestyle='-', label='Expert', alpha=1) # type: ignore 
 
     # plot confidence interval
     lower: List[float] = []

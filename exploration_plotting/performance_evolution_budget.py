@@ -56,11 +56,18 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
         dpi=plotting_configuration.dpi
         ) 
 
-    fig, axles= plt.subplots(2, 2, figsize=(7, 6))  # 2 rows, 2 column # type: ignore
-    fig.suptitle(f"{util.names_map[benchmark]}", fontweight="bold", fontsize=12) # type: ignore
+    # Additionally, force tight layout with minimal padding
+    # fig.tight_layout(pad=1)
+    fig, axles = plt.subplots(1, 4, figsize=(11, 3), gridspec_kw={'wspace': 0.2}) # type: ignore 
+    fig.subplots_adjust(left=0.06, right=0.98, top=0.85, bottom=0.15)
+
+
+    fig.suptitle(f"{util.names_map[benchmark]}", fontweight="bold", fontsize=16) # type: ignore
 
     # create one plot for each method, pairwise  
     methods: list[str] = list(filter(lambda x: len(x.split('_')) <= 1, exploration_data.keys()))
+
+    axles.flat[0].set_ylabel("Runtime (ms)") # type: ignore
 
     method_counter: int = 0
     for method in sorted(methods):
@@ -139,7 +146,26 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
             # get portion of that 
             speedup_proportion_string: str = f"{speedup_proportion:.2%}"
             budget_propotion_string: str = f"{budget_propotion:.2%}"
+            
             axles.flat[method_counter].plot([full_min[0], budget_min_point[0]], [full_min[1], budget_min_point[1]], lw=1, color='black', alpha=0.8, label=f"Speedup: {speedup_proportion_string} \nSamples: {budget_propotion_string}", zorder=2) # type: ignore
+
+            # axles.flat[method_counter].plot([full_min[0], budget_min_point[0]], [full_min[1], budget_min_point[1]], lw=1, color='black', alpha=0.8, zorder=2) # type: ignore
+
+            # print(f"full_min: {full_min[0]}")
+            # print(f"full_min: {full_min[1]}")
+
+            # axles.flat[method_counter].text(
+            #     # full_min[0], full_min[1],  # position of text
+            #     50, 15000,
+            #     f"Speedup: {speedup_proportion_string}\nSamples: {budget_propotion_string}",
+            #     fontsize=9,  # adjust fontsize as needed
+            #     color='black', 
+            #     ha='center', va='center',  # horizontal and vertical alignment
+            #     # backgroundcolor='white',   # optional: makes the text readable
+            #     zorder=3
+            # )
+
+            # put label to plot itself
 
             # budget_min_point[1] < full_min[1]
 
@@ -170,7 +196,7 @@ def performance_evolution_plot(plotting_configuration: PlottingConfiguration,
             # y-axis 
             axles.flat[method_counter].set_yscale('log') # type: ignore 
             axles.flat[method_counter].set_ylim(bottom=util.bottom_top[benchmark][0], top=util.bottom_top[benchmark][1]) # type: ignore
-            axles.flat[method_counter].set_ylabel("Runtime (ms)") # type: ignore
+            # axles.flat[method_counter].set_ylabel("Runtime (ms)") # type: ignore
             axles.flat[method_counter].yaxis.set_major_formatter(FuncFormatter(util.log_formatter)) # type: ignore
 
             legend = axles.flat[method_counter].legend() # type: ignore

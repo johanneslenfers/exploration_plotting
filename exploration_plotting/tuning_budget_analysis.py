@@ -95,7 +95,7 @@ def mean_speedup_absolute(plotting_configuration: PlottingConfiguration) -> None
     )
     # fig, ax = plt.subplots(figsize=(8, 4)) # type: ignore
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6, 6))  # 2 rows, 1 column
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 3))  # 2 rows, 1 column
     # fig.suptitle("Speedup", fontsize=12)
 
     # assemble plot

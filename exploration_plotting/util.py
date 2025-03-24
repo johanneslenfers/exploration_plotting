@@ -36,13 +36,13 @@ names_map: Dict[str, str] = {
 
     # Methods
     "MCTS": "MCTS",
-    "Exhaustive" : "Breadh-First-Search",
+    "Exhaustive" : "Breadth-First-Search",
     "RandomGraph" : "Random Sampling",
     "LocalSearch" : "Local Search",
 
     # Methods 2
     "MCTS_adjusted": "MCTS: Adj. Tuning-Budget",
-    "Exhaustive_adjusted" : "Breadh-First-Search: Adj. Tuning-Budget",
+    "Exhaustive_adjusted" : "Breadth-First-Search: Adj. Tuning-Budget",
     "RandomGraph_adjusted" : "Random Sampling: Adj. Tuning-Budget",
     "LocalSearch_adjusted" : "Local Search: Adj. Tuning-Budget",
 }
